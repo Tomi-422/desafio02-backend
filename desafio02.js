@@ -24,7 +24,7 @@ class ProductMannager {
         this.products.push(productInfo)
         ProductMannager.id ++
 
-        fs.promises.writeFile(this.path, JSON.stringify(this.products))
+        fs.writeFileSync(this.path, JSON.stringify(this.products))
     }
 
     getProducts = async () => {
@@ -33,20 +33,35 @@ class ProductMannager {
         return console.log(prod)
     }
 
-    getProductsById (id) {
-        const busqueda = this.products.find(e => e.id === id)
-        const data = null
-        const prod = null
-
-        if(busqueda != undefined) {
-            data =  fs.readFile(this.path, 'utf-8')
-            prod = JSON.parse(data)
-            return console.log(prod)
-        }else {
-            console.log('error product not found')
-        }
-
+    getProductsById(id) {
+        const data = fs.promises.readFile(this.path,'utf-8')
+        .then(data => {
+            data = JSON.parse(data)
+            const busqueda = data.find(e => e.id == id)
+            if(busqueda != undefined){
+                console.log('Producto encontrado', busqueda)
+            } else { error();}
+        })
+         .catch (error => {
+            console.log("Product not found")
+        })
     }
+
+    // getProductsById (id) {
+             
+    //     const data = fs.readFile(this.path, 'utf-8')
+        
+    //     data = JSON.parse(data)
+
+    //     const busqueda = data.find(e => e.id === id)
+
+    //     if(busqueda != undefined) {
+    //         return console.log(busqueda)
+    //     }else {
+    //         console.log('error product not found')
+    //     }
+
+    // }
 
     updateProduct () {
 
@@ -68,4 +83,4 @@ newProduct.addProduct('pica2', 'parapente', 3500, 'imgRoute', 2001, 1)
 
 //newProduct.getProducts() 
 
-newProduct.getProductsById(3)
+newProduct.getProductsById(4)
