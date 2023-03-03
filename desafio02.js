@@ -21,6 +21,13 @@ class ProductMannager {
             id: ProductMannager.id
         }
 
+        const addToproducts = async () => {
+            const data =fs.readFileSync(this.path, 'utf-8')
+            const prod = JSON.parse(data)
+            this.products.push(prod)
+            await addToproducts()
+        }
+
         this.products.push(productInfo)
         ProductMannager.id ++
 
@@ -39,36 +46,62 @@ class ProductMannager {
             data = JSON.parse(data)
             const busqueda = data.find(e => e.id == id)
             if(busqueda != undefined){
-                console.log('Producto encontrado', busqueda)
+               return console.log('Producto encontrado', busqueda)
             } else { error();}
         })
          .catch (error => {
-            console.log("Product not found")
+           return console.log("Product not found")
         })
     }
 
-    // getProductsById (id) {
-             
-    //     const data = fs.readFile(this.path, 'utf-8')
+    updateProduct = async (title, description, price, thumbnail, code, stock, id) => {
+
+        const product = ({
+            title,
+            description,
+            price,
+            thumbnail,
+            code,
+            stock,
+            id
+        })
+
+        let data = await fs.promises.readFile(this.path,'utf-8')
         
-    //     data = JSON.parse(data)
+        data = await JSON.parse(data)
+        let busqueda = await data.filter(e => e.id != id)
 
-    //     const busqueda = data.find(e => e.id === id)
+        await fs.promises.writeFile(this.path, JSON.stringify(busqueda))
 
-    //     if(busqueda != undefined) {
-    //         return console.log(busqueda)
-    //     }else {
-    //         console.log('error product not found')
-    //     }
-
-    // }
-
-    updateProduct () {
-
+        data = await fs.promises.readFile(this.path, 'utf-8')
+        .then(data => {
+            fs.appendFileSync(this.path, JSON.stringify(product))
+            console.log('Producto modificado con exito')
+        })
     }
 
-    deleteProduct () {
+    deleteProduct = async (id) => {
+        try {
+        let data = await fs.promises.readFile(this.path,'utf-8')
+        
+            data = await JSON.parse(data)
+            let busqueda = await data.filter(e => e.id != id)
+            let res = await data.some(e => e.id == id)
 
+
+            if (res == false)
+            {
+                error();
+            }else if (busqueda != undefined) {
+                await fs.promises.writeFile(this.path, JSON.stringify(busqueda))
+                data = await fs.promises.readFile(this.path,'utf-8')
+                .then(data => {
+                    console.log("Se a eliminido el producto")
+                    })
+                }
+        } catch(error) {
+                await console.log("El producto no existe")
+            }
     }
 }
 
@@ -81,6 +114,10 @@ newProduct.addProduct('emotion3', 'parapente', 2800, 'imgRoute', 2000, 1)
 newProduct.addProduct('pica2', 'parapente', 3500, 'imgRoute', 2001, 1)
 
 
-//newProduct.getProducts() 
+//newProduct.updateProduct('batoque acro', 'impreso en resina', 100, 'imgRoute', 1243, 1, 1 )
+//newProduct.getProductsById(1)
 
-newProduct.getProductsById(4)
+newProduct.getProducts()
+
+//newProduct.deleteProduct(2)
+
