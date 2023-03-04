@@ -54,18 +54,10 @@ class ProductMannager {
         })
     }
 
-    updateProduct = async (title, description, price, thumbnail, code, stock, id) => {
+    updateProduct = async (id, prodUpdate) => {
 
-        const product = ({
-            title,
-            description,
-            price,
-            thumbnail,
-            code,
-            stock,
-            id
-        })
-
+        const product = prodUpdate
+            
         let data = await fs.promises.readFile(this.path,'utf-8')
         
         data = await JSON.parse(data)
@@ -74,9 +66,15 @@ class ProductMannager {
         await fs.promises.writeFile(this.path, JSON.stringify(busqueda))
 
         data = await fs.promises.readFile(this.path, 'utf-8')
-        .then(data => {
+        .then (data => {
             fs.appendFileSync(this.path, JSON.stringify(product))
             console.log('Producto modificado con exito')
+            let showProduct = async () => {
+                let newData = await fs.promises.readFile(this.path, 'utf-8')
+                let hola = JSON.parse(newData)
+                console.log(hola)
+            }
+            showProduct()
         })
     }
 
@@ -110,14 +108,23 @@ const newProduct = new ProductMannager('./products.json')
 
 newProduct.addProduct('batoque acro', 'impreso en 3D', 80, 'imgRoute', 1243, 15)
 newProduct.addProduct('batoque xc', 'impreso en 3D', 200, 'imgRoute', 1244, 15)
-newProduct.addProduct('emotion3', 'parapente', 2800, 'imgRoute', 2000, 1)
-newProduct.addProduct('pica2', 'parapente', 3500, 'imgRoute', 2001, 1)
+//newProduct.addProduct('emotion3', 'parapente', 2800, 'imgRoute', 2000, 1)
+//newProduct.addProduct('pica2', 'parapente', 3500, 'imgRoute', 2001, 1)
 
+const prodUpdate = {
+    title: 'batoque xc',
+    description: 'impreso en 3D',
+    price: 400,
+    thumbnail: 'imgRoute',
+    code: 1244,
+    stock: 10
+}
 
-//newProduct.updateProduct('batoque acro', 'impreso en resina', 100, 'imgRoute', 1243, 1, 1 )
+newProduct.updateProduct(2, prodUpdate)
+
 //newProduct.getProductsById(1)
 
-newProduct.getProducts()
+//newProduct.getProducts()
 
 //newProduct.deleteProduct(2)
 
