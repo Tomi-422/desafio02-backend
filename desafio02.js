@@ -55,27 +55,16 @@ class ProductMannager {
     }
 
     updateProduct = async (id, prodUpdate) => {
-
-        const product = prodUpdate
-            
+    
         let data = await fs.promises.readFile(this.path,'utf-8')
         
         data = await JSON.parse(data)
-        let busqueda = await data.filter(e => e.id != id)
+        let index = await data.findIndex((e) => e.id === id)
 
-        await fs.promises.writeFile(this.path, JSON.stringify(busqueda))
-
-        data = await fs.promises.readFile(this.path, 'utf-8')
-        .then (data => {
-            fs.appendFileSync(this.path, JSON.stringify(product))
+        if(index !== -1){ data[index] = Object.assign({}, data[index], prodUpdate, { id })
+            fs.writeFileSync(this.path, JSON.stringify(data))
             console.log('Producto modificado con exito')
-            let showProduct = async () => {
-                let newData = await fs.promises.readFile(this.path, 'utf-8')
-                let hola = JSON.parse(newData)
-                console.log(hola)
-            }
-            showProduct()
-        })
+        } else console.log('error')
     }
 
     deleteProduct = async (id) => {
